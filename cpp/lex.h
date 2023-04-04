@@ -38,6 +38,8 @@ enum TokenType {
 	BRACK_R = 213
 };
 
+extern map<string, TokenType> tok_type_str;
+
 struct Token {
     string text;
     TokenType kind;

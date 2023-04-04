@@ -3,7 +3,7 @@
 Token::Token(const string& token_text, TokenType tt): text(token_text), kind(tt)
 {} 
 
-static map<string, TokenType> tok_type_str = {
+map<string, TokenType> tok_type_str = {
     {"END_OF_FILE", END_OF_FILE},
     {"NEWLINE", NEWLINE},
 	{"NUMBER", NUMBER},
@@ -40,7 +40,7 @@ optional<TokenType> Token::check_if_keyword(const string& token_text) {
     return tok_type_str.find(token_text) != tok_type_str.end() ? optional(tok_type_str[token_text]) : nullopt; 
 }
 
-Lexer::Lexer(const string & source): source(source), cur_char('\0'), cur_pos(-1) {
+Lexer::Lexer(const string & source): source(source+"\n"), cur_char('\0'), cur_pos(-1) {
     next_char();
 }
 
@@ -134,6 +134,7 @@ Token Lexer::get_token() {
             if (cur_char == '\r' || cur_char == '\n' || cur_char == '\t' || cur_char == '\\' || cur_char == '%'){
                 abort("Illegal character in string");
             }
+            next_char();
         }
 
         string tok_text = source.substr(start_pos, cur_pos - start_pos);
@@ -146,6 +147,9 @@ Token Lexer::get_token() {
         }
         if (peek() == '.') {
             next_char();
+            if (!isdigit(peek())) {
+                abort("Illegal character in number.");
+            }
             while (isdigit(peek())) {
                 next_char();
             }
